@@ -22,6 +22,6 @@ class ActorRepository extends ServiceEntityRepository
     public function getList(): array
     {
         $q=$this->createQueryBuilder("a");
-        return $q->select("a.id","a.name","a.topic")->orderBy("a.name","ASC")->getQuery()->getResult();
+        return $q->select("a.id","a.name","a.topic","a.statusTopic")->orderBy("a.name","ASC")->getQuery()->getResult();
     }
 }
