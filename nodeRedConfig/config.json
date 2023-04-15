@@ -1,0 +1,32 @@
+{
+  "devices": [
+    {
+      "name": "Bunsen",
+      "actors": [
+        {
+          "topic": "Bunsen/left/red"
+        },
+        {
+          "topic": "Bunsen/left/green"
+        },
+        {
+          "topic": "Bunsen/left/yellow"
+        },
+        {
+          "topic": "Bumsen/jetzt",
+          "trigger": [
+            {
+              "topic": "Beaker/small/red",
+              "payload": 2
+            },
+            {
+              "topic": "Beaker/small/green",
+              "payload": 2
+            }
+
+          ]
+        }
+      ]
+    }
+  ]
+}
