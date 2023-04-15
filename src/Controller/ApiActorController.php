@@ -24,4 +24,14 @@ class ApiActorController extends BaseController
     {
         return new JsonResponse($actor->toArray());
     }
+
+    #[Route('/{actor}', name: '_delete', methods: ["DELETE"])]
+    public function deleteAction(Actor $actor): JsonResponse
+    {
+        $this->mqtt("/actor/remove",$actor->toArray());
+        $this->entityManager->remove($actor);
+        $this->entityManager->flush();
+        return $this->ok();
+    }
+
 }

@@ -22,6 +22,9 @@ class Actor
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $payload = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $statusTopic = null;
+
     public function __construct($data=null)
     {
         if($data!==null) $this->fromArray($data);
@@ -100,6 +103,25 @@ class Actor
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getStatusTopic(): ?string
+    {
+        return $this->statusTopic;
+    }
+
+    /**
+     * @param string|null $statusTopic
+     * @return Actor
+     */
+    public function setStatusTopic(?string $statusTopic): Actor
+    {
+        $this->statusTopic = $statusTopic;
+        return $this;
+    }
+
+
 
     /**
      * @return array
@@ -110,7 +132,8 @@ class Actor
             "id" => $this->id,
             "name" => $this->name,
             "topic" => $this->topic,
-            "payload" => $this->payload
+            "payload" => $this->payload,
+            "statusTopic" => $this->statusTopic
         ];
     }
 
@@ -124,6 +147,7 @@ class Actor
         $this->name=$data["name"];
         $this->topic=$data["topic"];
         $this->payload=$data["payload"];
+        $this->statusTopic=$data["statusTopic"];
         return $this;
     }
 }
