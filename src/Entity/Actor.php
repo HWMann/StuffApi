@@ -37,9 +37,9 @@ class Actor
 
     /**
      * @param int|null $id
-     * @return Box
+     * @return Actor
      */
-    public function setId(?int $id): Box
+    public function setId(?int $id): Actor
     {
         $this->id = $id;
 
@@ -56,9 +56,9 @@ class Actor
 
     /**
      * @param string|null $name
-     * @return Box
+     * @return Actor
      */
-    public function setName(?string $name): Box
+    public function setName(?string $name): Actor
     {
         $this->name = $name;
         return $this;
