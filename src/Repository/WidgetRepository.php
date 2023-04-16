@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Actor;
+use App\Entity\Widget;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -22,6 +22,6 @@ class WidgetRepository extends ServiceEntityRepository
     public function getList(): array
     {
         $q=$this->createQueryBuilder("a");
-        return $q->select("a.id","a.name","a.topic","a.statusTopic","a.status")->orderBy("a.name","ASC")->getQuery()->getResult();
+        return $q->select("a.id","a.name")->orderBy("a.name","ASC")->getQuery()->getResult();
     }
 }
