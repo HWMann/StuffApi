@@ -37,11 +37,56 @@ class BaseController extends AbstractController
         $this->helper = $jsonHelper;
     }
 
+    // for old dingsis
+    public function ok(string $message="Great success!", string $summary="Great success!"):JsonResponse {
+        return $this->success($message,$summary);
+    }
     /**
      * @return JsonResponse
      */
-    public function ok():JsonResponse {
-        return new JsonResponse(["success" => true]);
+    public function success(string $message="Great success!", string $summary="Great success!"):JsonResponse {
+        return new JsonResponse([
+            "success" => true,
+            "message" => $message,
+            "summary" => $summary,
+            "severity" => "success"
+        ]);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function info(string $message="Great info!", string $summary="Great info!"):JsonResponse {
+        return new JsonResponse([
+            "success" => true,
+            "message" => $message,
+            "summary" => $summary,
+            "severity" => "info"
+        ]);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function warn(string $message="Great warning!", string $summary="Great warning!"):JsonResponse {
+        return new JsonResponse([
+            "success" => true,
+            "message" => $message,
+            "summary" => $summary,
+            "severity" => "warn"
+        ]);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function error(string $message="Great error!", string $summary="Great error!"):JsonResponse {
+        return new JsonResponse([
+            "success" => true,
+            "message" => $message,
+            "summary" => $summary,
+            "severity" => "error"
+        ]);
     }
 
     /**
@@ -50,18 +95,6 @@ class BaseController extends AbstractController
      */
     public function mqtt(string $topic, mixed $data):void {
         $this->mqttService->publish($topic,$data);
-    }
-
-    /**
-     * @param $message
-     * @return void
-     */
-    public function success($message):void {
-        $this->mqttService->publish("MyStuffRestSays/message",[
-            "type" => "success",
-            "title" => "Das hat geklappt...",
-            "message" => $message
-        ]);
     }
 
     /**

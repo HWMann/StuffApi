@@ -9,11 +9,11 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Tag>
  */
-class ActorRepository extends ServiceEntityRepository
+class WidgetRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Actor::class);
+        parent::__construct($registry, Widget::class);
     }
 
     /**

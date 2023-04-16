@@ -3,13 +3,41 @@
 namespace App\Controller;
 
 use App\Entity\Actor;
+use App\Repository\ActorRepository;
 use App\Services\ActorService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use JsonPath\JsonObject;
 
 #[Route('/actor', name: '_actor')]
 class ApiActorController extends BaseController
 {
+    #[Route('/updateStatus', name: '_update_status', methods: ["POST"])]
+    public function updateStatusAction(ActorRepository $actorRepository): JsonResponse
+    {
+        $actor=$actorRepository->findOneBy(["statusTopic" => $this->req["t"]]);
+
+        if($actor!==null) {
+            $jsonPath=$actor->getJsonPath();
+
+            if($jsonPath!==null) {
+                $jsonObject=new JsonObject(json_decode($this->req["s"]));
+                $stat=$jsonObject->get($jsonPath);
+                $stat=($stat[0]===1) ? true : false;
+            } else {
+                $stat=($this->req["s"]===1) ? true : false;
+            }
+
+            $actor->setStatus($stat);
+            $this->entityManager->flush();
+            $this->mqtt("/actor/status/update/".$actor->getId(),$stat);
+            return new JsonResponse(["data" => $stat]);
+        }
+
+        return $this->ok();
+    }
+
+
     #[Route('', name: '_create', methods: ["PUT"])]
     #[Route('/{actor}', name: '_update', methods: ["POST"])]
     public function createOrUpdateAction(ActorService $actorService, ?Actor $actor = null): JsonResponse
@@ -33,5 +61,8 @@ class ApiActorController extends BaseController
         $this->entityManager->flush();
         return $this->ok();
     }
+
+
+
 
 }

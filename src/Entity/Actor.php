@@ -26,7 +26,10 @@ class Actor
     private ?string $statusTopic = null;
 
     #[ORM\Column(nullable: false)]
-    private bool|null $status = false;
+    private int|null $status = 0;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $jsonPath = null;
 
     public function __construct($data=null)
     {
@@ -125,22 +128,42 @@ class Actor
     }
 
     /**
-     * @return bool|null
+     * @return int
      */
-    public function getStatus(): ?bool
+    public function getStatus(): int
     {
         return $this->status;
     }
 
     /**
-     * @param bool|null $status
+     * @param int $status
      * @return Actor
      */
-    public function setStatus(?bool $status): Actor
+    public function setStatus(int $status): Actor
     {
         $this->status = $status;
         return $this;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getJsonPath(): ?string
+    {
+        return $this->jsonPath;
+    }
+
+    /**
+     * @param string|null $jsonPath
+     * @return Actor
+
+     */
+    public function setJsonPath(?string $jsonPath): Actor
+    {
+        if($jsonPath=="") $this->jsonPath=null; else $this->jsonPath = $jsonPath;
+        return $this;
+    }
+
 
 
 
@@ -155,7 +178,8 @@ class Actor
             "topic" => $this->topic,
             "payload" => $this->payload,
             "statusTopic" => $this->statusTopic,
-            "status" => $this->status
+            "status" => $this->status,
+            "jsonPath" => $this->jsonPath
         ];
     }
 
@@ -166,11 +190,11 @@ class Actor
     public function fromArray(array $data): Actor
     {
         $this->id=$data["id"];
-        $this->name=$data["name"];
-        $this->topic=$data["topic"];
-        $this->payload=$data["payload"];
-        $this->statusTopic=$data["statusTopic"];
-        $this->status=$data["status"];
+        $this->name=$data["name"] ?? null;
+        $this->topic=$data["topic"] ?? null;
+        $this->payload=$data["payload"] ?? null;
+        $this->statusTopic=$data["statusTopic"] ?? null;
+        $this->jsonPath=($data["jsonPath"]!="") ? $data["jsonPath"] : null;
         return $this;
     }
 }
