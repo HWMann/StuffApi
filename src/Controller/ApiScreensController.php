@@ -12,6 +12,6 @@ class ApiScreensController extends BaseController
     #[Route('', name: '_list', methods: ["GET"])]
     public function listAction(ScreenRepository $screenRepository):JsonResponse
     {
-        return new JsonResponse($screenRepository->getList());
+        return $this->sResponse($screenRepository->findAll());
     }
 }

@@ -22,6 +22,15 @@ class WidgetRepository extends ServiceEntityRepository
     public function getList(): array
     {
         $q=$this->createQueryBuilder("a");
-        return $q->select("a.id","a.name")->orderBy("a.name","ASC")->getQuery()->getResult();
+        return $q->select(
+            "a.id",
+            "a.name",
+            "a.visible",
+            "s.name AS screenName"
+        )
+            ->leftJoin("a.screen","s")
+            ->orderBy("a.name","ASC")
+            ->getQuery()
+            ->getResult();
     }
 }

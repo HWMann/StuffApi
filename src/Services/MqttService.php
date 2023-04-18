@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use PhpMqtt\Client\Exceptions\DataTransferException;
+use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\MqttClient;
 
 class MqttService
@@ -14,8 +16,22 @@ class MqttService
         $this->mqttClient->connect();
     }
 
-    public function publish(string $topic, mixed $data) {
+    /**
+     * @param string $topic
+     * @param mixed|null $data
+     * @param $fromRoot
+     * @return void
+     * @throws DataTransferException
+     * @throws RepositoryException
+     */
+    public function publish(string $topic, mixed $data = "", $fromRoot=false) {
+        if($data==null) $data="";
         if(is_array($data)) $data=json_encode($data);
-        $this->mqttClient->publish("MyStuffRestSays".$topic,$data,0);
+        if($fromRoot===false) {
+            $this->mqttClient->publish("MyStuffRestSays".$topic,$data,0);
+        } else {
+            $this->mqttClient->publish($topic,$data,0);
+        }
+
     }
 }

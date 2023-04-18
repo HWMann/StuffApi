@@ -3,33 +3,47 @@
 namespace App\Entity;
 
 use App\Repository\ScreenRepository;
-use App\Repository\WidgetRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity(repositoryClass: ScreenRepository::class)]
 class Screen
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
+    #[OneToMany(targetEntity: Widget::class, mappedBy: 'screen')]
+    private Collection $widgets;
+
+    #[ORM\Column(nullable: false)]
+    private bool $visible = true;
+
+    public function __construct()
+    {
+        $this->widgets = new ArrayCollection();
+    }
+
     /**
-     * @return int|null
+     * @return int
      */
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @param int|null $id
+     * @param int $id
      * @return Screen
      */
-    public function setId(?int $id): Screen
+    public function setId(int $id): Screen
     {
         $this->id = $id;
         return $this;
@@ -53,27 +67,41 @@ class Screen
         return $this;
     }
 
-
-
     /**
-     * @return array
+     * @return Collection|null
      */
-    public function toArray():array
+    public function getWidgets(): ?Collection
     {
-        return [
-            "id" => $this->id,
-            "name" => $this->name,
-        ];
+        return $this->widgets;
     }
 
     /**
-     * @param array $data
+     * @param Collection|null $widgets
      * @return Screen
      */
-    public function fromArray(array $data): Screen
+    public function setWidgets(?Collection $widgets): Screen
     {
-        $this->id=$data["id"];
-        $this->name=$data["name"] ?? null;
+        $this->widgets = $widgets;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isVisible(): bool
+    {
+        return $this->visible;
+    }
+
+    /**
+     * @param bool $visible
+     * @return Screen
+     */
+    public function setVisible(bool $visible): Screen
+    {
+        $this->visible = $visible;
+        return $this;
+    }
+
+
 }

@@ -3,32 +3,33 @@
 namespace App\Controller;
 
 use App\Entity\Widget;
-use App\Services\WidgetService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/widget', name: 'widget')]
 class ApiWidgetController extends BaseController
 {
-    #[Route('', name: '_create', methods: ["PUT"])]
-    #[Route('/{widget}', name: '_update', methods: ["POST"])]
-    public function createOrUpdateAction(WidgetService $widgetService, ?Widget $widget = null): JsonResponse
+    #[Route('', name: '_create', methods: ["PUT","POST"])]
+    public function createOrUpdateAction(): JsonResponse
     {
-        $widget = $widgetService->createOrUpdate($this->req,$widget);
-        $this->mqtt("/widget/update",$widget->toArray());
+        $widget=$this->deserialize($this->json,Widget::class);
+        $this->entityManager->flush();
+        $this->mqtt("/widget/update",$this->serialize($widget));
+        $this->mqtt("Honeydew/reload",null,true);
         return $this->success("Widget ".$widget->getName()." saved!");
     }
 
     #[Route('/{widget}', name: '_edit', methods: ["GET"])]
     public function editAction(Widget $widget): JsonResponse
     {
-        return new JsonResponse($widget->toArray());
+        return JsonResponse::fromJsonString($this->serialize($widget));
     }
 
     #[Route('/{widget}', name: '_delete', methods: ["DELETE"])]
     public function deleteAction(Widget $widget): JsonResponse
     {
-        $this->mqtt("/widget/remove",$widget->toArray());
+        $this->mqtt("/widget/remove",$this->serialize($widget));
+        $this->mqtt("Honeydew/reload",null,true);
         $this->entityManager->remove($widget);
         $this->entityManager->flush();
         return $this->success("Widget ".$widget->getName()." deleted!");

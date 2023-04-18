@@ -31,6 +31,7 @@ class ApiActorController extends BaseController
             $actor->setStatus($stat);
             $this->entityManager->flush();
             $this->mqtt("/actor/status/update/".$actor->getId(),$stat);
+            $this->mqtt("Honeydew/reload",null,true);
             return new JsonResponse(["data" => $stat]);
         }
 
@@ -44,6 +45,7 @@ class ApiActorController extends BaseController
     {
         $actor = $actorService->createOrUpdate($this->req,$actor);
         $this->mqtt("/actor/update",$actor->toArray());
+        $this->mqtt("Honeydew/reload",null,true);
         return $this->ok();
     }
 
@@ -57,6 +59,7 @@ class ApiActorController extends BaseController
     public function deleteAction(Actor $actor): JsonResponse
     {
         $this->mqtt("/actor/remove",$actor->toArray());
+        $this->mqtt("Honeydew/reload",null,true);
         $this->entityManager->remove($actor);
         $this->entityManager->flush();
         return $this->ok();
