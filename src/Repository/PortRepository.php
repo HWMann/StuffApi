@@ -2,18 +2,18 @@
 
 namespace App\Repository;
 
-use App\Entity\Actor;
+use App\Entity\Port;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Tag>
  */
-class ActorRepository extends ServiceEntityRepository
+class PortRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Actor::class);
+        parent::__construct($registry, Port::class);
     }
 
     /**
@@ -22,6 +22,6 @@ class ActorRepository extends ServiceEntityRepository
     public function getList(): array
     {
         $q=$this->createQueryBuilder("a");
-        return $q->select("a.id","a.name","a.topic","a.statusTopic","a.status","a.ports")->orderBy("a.name","ASC")->getQuery()->getResult();
+        return $q->select("a.id","a.name","a.topic","a.statusTopic","a.status")->orderBy("a.name","ASC")->getQuery()->getResult();
     }
 }

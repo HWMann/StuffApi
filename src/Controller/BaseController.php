@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Services\JsonHelper;
 use App\Services\MqttService;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
@@ -49,7 +50,10 @@ class BaseController extends AbstractController
      */
     public function serialize(mixed $data): string
     {
-        return $this->serializer->serialize($data, 'json');
+        $context = new SerializationContext();
+        $context->setSerializeNull(true);
+
+        return $this->serializer->serialize($data, 'json',$context);
     }
 
     /**
@@ -74,20 +78,22 @@ class BaseController extends AbstractController
     }
 
     // for old dingsis
-    public function ok(string $message = "Great success!", string $summary = "Great success!"): JsonResponse
+    public function ok(string $message = "Great success!", ?array $data=null): JsonResponse
     {
-        return $this->success($message, $summary);
+        return $this->success($message, $data);
     }
 
     /**
+     * @param string $message
+     * @param array|null $data
      * @return JsonResponse
      */
-    public function success(string $message = "Great success!", string $summary = "Great success!"): JsonResponse
+    public function success(string $message = "Great success!", ?array $data=null): JsonResponse
     {
         return new JsonResponse([
             "success" => true,
             "message" => $message,
-            "summary" => $summary,
+            "data" => $data,
             "severity" => "success"
         ]);
     }

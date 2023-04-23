@@ -12,6 +12,6 @@ class ApiActorsController extends BaseController
     #[Route('', name: '_list', methods: ["GET"])]
     public function listAction(ActorRepository $actorRepository):JsonResponse
     {
-        return new JsonResponse($actorRepository->getList());
+        return JsonResponse::fromJsonString($this->serialize($actorRepository->findAll()));
     }
 }

@@ -3,7 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\ActorRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use JMS\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: ActorRepository::class)]
 class Actor
@@ -31,9 +37,12 @@ class Actor
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $jsonPath = null;
 
-    public function __construct($data=null)
+    #[OneToMany(targetEntity: Port::class, mappedBy: 'actor')]
+    private Collection $ports;
+
+    public function __construct()
     {
-        if($data!==null) $this->fromArray($data);
+        $this->ports = new ArrayCollection();
     }
 
     /**
@@ -156,45 +165,31 @@ class Actor
     /**
      * @param string|null $jsonPath
      * @return Actor
-
      */
     public function setJsonPath(?string $jsonPath): Actor
     {
-        if($jsonPath=="") $this->jsonPath=null; else $this->jsonPath = $jsonPath;
+        if ($jsonPath == "") $this->jsonPath = null; else $this->jsonPath = $jsonPath;
         return $this;
     }
 
-
-
-
     /**
-     * @return array
+     * @return Collection
      */
-    public function toArray():array
+    public function getPorts(): Collection
     {
-        return [
-            "id" => $this->id,
-            "name" => $this->name,
-            "topic" => $this->topic,
-            "payload" => $this->payload,
-            "statusTopic" => $this->statusTopic,
-            "status" => $this->status,
-            "jsonPath" => $this->jsonPath
-        ];
+        return $this->ports;
     }
 
     /**
-     * @param array $data
+     * @param Collection $ports
      * @return Actor
      */
-    public function fromArray(array $data): Actor
+    public function setPorts(Collection $ports): Actor
     {
-        $this->id=$data["id"];
-        $this->name=$data["name"] ?? null;
-        $this->topic=$data["topic"] ?? null;
-        $this->payload=$data["payload"] ?? null;
-        $this->statusTopic=$data["statusTopic"] ?? null;
-        $this->jsonPath=($data["jsonPath"]!="") ? $data["jsonPath"] : null;
+        $this->ports = $ports;
         return $this;
     }
+
+
+
 }

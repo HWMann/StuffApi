@@ -9,14 +9,14 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/widget', name: 'widget')]
 class ApiWidgetController extends BaseController
 {
-    #[Route('', name: '_create', methods: ["PUT","POST"])]
-    public function createOrUpdateAction(): JsonResponse
+    #[Route('', name: '_save', methods: ["PUT","POST"])]
+    public function saveAction(): JsonResponse
     {
         $widget=$this->deserialize($this->json,Widget::class);
         $this->entityManager->flush();
         $this->mqtt("/widget/update",$this->serialize($widget));
         $this->mqtt("Honeydew/reload",null,true);
-        return $this->success("Widget ".$widget->getName()." saved!");
+        return $this->success("widgets.toasts.saved",["widget" => $widget->getName()]);
     }
 
     #[Route('/{widget}', name: '_edit', methods: ["GET"])]

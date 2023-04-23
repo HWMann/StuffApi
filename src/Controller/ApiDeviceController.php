@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ApiDeviceController extends BaseController
 {
     #[Route('/updateStatus', name: '_update_status', methods: ["POST"])]
-    public function updateStatusAction(DeviceRepository $deviceRepository): JsonResponse
+    public function updateStatusAction(DeviceRepository $deviceRepository)
     {
         $device=$deviceRepository->findOneBy(["name" => $this->req["device"]]);
         $device
@@ -26,8 +26,6 @@ class ApiDeviceController extends BaseController
 
         $this->entityManager->flush();
         $this->mqtt("/device/update",$device->toArray());
-
-        return $this->ok();
     }
 
     #[Route('', name: '_create', methods: ["PUT"])]

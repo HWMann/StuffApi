@@ -26,7 +26,8 @@ class WidgetRepository extends ServiceEntityRepository
             "a.id",
             "a.name",
             "a.visible",
-            "s.name AS screenName"
+            "s.name AS screenName",
+            "a.type"
         )
             ->leftJoin("a.screen","s")
             ->orderBy("a.name","ASC")
