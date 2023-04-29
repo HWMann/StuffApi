@@ -9,7 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\ORM\Mapping\OneToOne;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 #[ORM\Entity(repositoryClass: WidgetRepository::class)]
 class Widget
@@ -26,18 +29,32 @@ class Widget
     #[JoinColumn(name: 'screen_id', referencedColumnName: 'id', nullable: true)]
     private Screen|null $screen = null;
 
-    #[OneToMany(targetEntity: Action::class, mappedBy: 'widget', cascade: ["all"])]
-    private Collection $actions;
-
     #[ORM\Column(nullable: false)]
     private bool $visible = true;
 
     #[ORM\Column(length: 12, nullable: true)]
     private ?string $type = null;
 
-    #[ManyToOne(targetEntity: Actor::class,cascade: ["all"])]
+    #[ManyToOne(targetEntity: Actor::class, inversedBy: 'statusWidgets')]
     #[JoinColumn(name: 'status_actor_id', referencedColumnName: 'id', nullable: true)]
-    private Actor|null $statusFrom = null;
+    #[SerializedName("statusActor")]
+    private Actor|null $statusActor = null;
+
+    #[OneToMany(targetEntity: Action::class, mappedBy: 'widget', cascade: ["all"])]
+    private Collection $actions;
+
+    #[ORM\Column(nullable: false)]
+    private int $x = 0;
+
+    #[ORM\Column(nullable: false)]
+    private int $y = 0;
+
+    #[ORM\Column(nullable: false)]
+    private int $w = 1;
+
+    #[ORM\Column(nullable: false)]
+    private int $h = 1;
+
 
     public function __construct()
     {
@@ -99,24 +116,6 @@ class Widget
     }
 
     /**
-     * @return Collection
-     */
-    public function getActions(): Collection
-    {
-        return $this->actions;
-    }
-
-    /**
-     * @param Collection $actions
-     * @return Widget
-     */
-    public function setActions(Collection $actions): Widget
-    {
-        $this->actions = $actions;
-        return $this;
-    }
-
-    /**
      * @return bool
      */
     public function isVisible(): bool
@@ -155,21 +154,125 @@ class Widget
     /**
      * @return Actor|null
      */
-    public function getStatusFrom(): ?Actor
+    public function getStatusActor(): ?Actor
     {
-        return $this->statusFrom;
+        return $this->statusActor;
     }
 
     /**
-     * @param Actor|null $statusFrom
+     * @param Actor|null $statusActor
      * @return Widget
      */
-    public function setStatusFrom(?Actor $statusFrom): Widget
+    public function setStatusActor(?Actor $statusActor): Widget
     {
-        $this->statusFrom = $statusFrom;
+        $this->statusActor = $statusActor;
         return $this;
     }
 
+    /**
+     * @return Collection
+     */
+    public function getActions(): Collection
+    {
+        return $this->actions;
+    }
+
+    /**
+     * @param Collection $actions
+     * @return Widget
+     */
+    public function setActions(Collection $actions): Widget
+    {
+        $this->actions = $actions;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getX(): int
+    {
+        return $this->x;
+    }
+
+    /**
+     * @param int $x
+     * @return Widget
+     */
+    public function setX(int $x): Widget
+    {
+        $this->x = $x;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getY(): int
+    {
+        return $this->y;
+    }
+
+    /**
+     * @param int $y
+     * @return Widget
+     */
+    public function setY(int $y): Widget
+    {
+        $this->y = $y;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getW(): int
+    {
+        return $this->w;
+    }
+
+    /**
+     * @param int $w
+     * @return Widget
+     */
+    public function setW(int $w): Widget
+    {
+        $this->w = $w;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getH(): int
+    {
+        return $this->h;
+    }
+
+    /**
+     * @param int $h
+     * @return Widget
+     */
+    public function setH(int $h): Widget
+    {
+        $this->h = $h;
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @Type("string")
+     * @SerializedName("cssGridCoords")
+     */
+    public function cssGridCoords()
+    {
+        return sprintf("grid-column: %d / span %d;grid-row: %d / span %d",
+            $this->x+1,
+            $this->w,
+            $this->y+1,
+            $this->h,
+        );
+    }
 
 
 }

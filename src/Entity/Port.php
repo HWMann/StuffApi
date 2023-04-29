@@ -22,7 +22,7 @@ class Port
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $payload = null;
 
-    #[ManyToOne(targetEntity: Actor::class, inversedBy: 'ports')]
+    #[ManyToOne(targetEntity: Actor::class,cascade: ["all"], inversedBy: "ports")]
     #[JoinColumn(name: 'actor_id', referencedColumnName: 'id', nullable: true)]
     private Actor|null $actor = null;
 

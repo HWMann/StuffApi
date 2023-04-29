@@ -12,6 +12,6 @@ class ApiWidgetsController extends BaseController
     #[Route('', name: '_list', methods: ["GET"])]
     public function listAction(WidgetRepository $widgetRepository):JsonResponse
     {
-        return new JsonResponse($widgetRepository->getList());
+        return $this->sResponse($widgetRepository->findBy([],["name" => "ASC"]));
     }
 }

@@ -7,9 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\OneToOne;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\MaxDepth;
+use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity(repositoryClass: ActionRepository::class)]
 class Action
@@ -23,10 +21,12 @@ class Action
     #[JoinColumn(name: 'widget_id', referencedColumnName: 'id', nullable: true)]
     private Widget|null $widget = null;
 
-    #[OneToOne(targetEntity: Port::class)]
+    #[ManyToOne(targetEntity: Port::class)]
+    #[JoinColumn(name: 'port_id', referencedColumnName: 'id', nullable: true)]
     private Port|null $port = null;
 
-    #[OneToOne(targetEntity: Actor::class,cascade: ["all"])]
+    #[ManyToOne(targetEntity: Actor::class, cascade: ["all"])]
+    #[JoinColumn(name: 'actor_id', referencedColumnName: 'id', nullable: true)]
     private Actor|null $actor = null;
 
     /**
@@ -44,7 +44,6 @@ class Action
     public function setId(?int $id): Action
     {
         $this->id = $id;
-
         return $this;
     }
 

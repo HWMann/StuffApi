@@ -6,10 +6,7 @@ use App\Repository\ActorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use JMS\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: ActorRepository::class)]
 class Actor
@@ -37,12 +34,16 @@ class Actor
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $jsonPath = null;
 
+    #[OneToMany(targetEntity: Widget::class, mappedBy: 'statusActor')]
+    private Collection $statusWidgets;
+
     #[OneToMany(targetEntity: Port::class, mappedBy: 'actor')]
     private Collection $ports;
 
     public function __construct()
     {
         $this->ports = new ArrayCollection();
+        $this->statusWidgets = new ArrayCollection();
     }
 
     /**
@@ -61,6 +62,24 @@ class Actor
     {
         $this->id = $id;
 
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getPorts(): ArrayCollection
+    {
+        return $this->ports;
+    }
+
+    /**
+     * @param ArrayCollection $ports
+     * @return Actor
+     */
+    public function setPorts(ArrayCollection $ports): Actor
+    {
+        $this->ports = $ports;
         return $this;
     }
 
@@ -137,18 +156,18 @@ class Actor
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getStatus(): int
+    public function getStatus(): ?int
     {
         return $this->status;
     }
 
     /**
-     * @param int $status
+     * @param int|null $status
      * @return Actor
      */
-    public function setStatus(int $status): Actor
+    public function setStatus(?int $status): Actor
     {
         $this->status = $status;
         return $this;
@@ -168,28 +187,25 @@ class Actor
      */
     public function setJsonPath(?string $jsonPath): Actor
     {
-        if ($jsonPath == "") $this->jsonPath = null; else $this->jsonPath = $jsonPath;
+        $this->jsonPath = $jsonPath;
         return $this;
     }
 
     /**
      * @return Collection
      */
-    public function getPorts(): Collection
+    public function getStatusWidgets(): Collection
     {
-        return $this->ports;
+        return $this->statusWidgets;
     }
 
     /**
-     * @param Collection $ports
+     * @param Collection $statusWidgets
      * @return Actor
      */
-    public function setPorts(Collection $ports): Actor
+    public function setStatusWidgets(Collection $statusWidgets): Actor
     {
-        $this->ports = $ports;
+        $this->statusWidgets = $statusWidgets;
         return $this;
     }
-
-
-
 }
