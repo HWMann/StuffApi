@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\BoxRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BoxRepository::class)]
 class Box
@@ -12,28 +14,29 @@ class Box
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["list", "edit"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["list", "edit"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 32, nullable: true)]
+    #[Groups(["list", "edit"])]
     private ?string $short = null;
 
     #[ORM\OneToMany(targetEntity: 'Box', mappedBy: 'parent')]
+    #[Exclude]
     private ?Collection $children = null;
 
     #[ORM\ManyToOne(targetEntity: 'Box', inversedBy: 'children')]
     #[ORM\JoinColumn(name: 'parent', referencedColumnName: 'id')]
-    #[Excl]
+    #[Exclude]
     private ?Box $parent = null;
 
     #[ORM\Column(type: "boolean")]
+    #[Exclude]
     private bool $trashed = false;
-
-    public function __construct()
-    {
-    }
 
     /**
      * @return int|null
@@ -151,11 +154,12 @@ class Box
     /**
      * @return array
      */
-    public function toArray():array {
-        if($this->parent===null) {
-            $parent=["id" => 0,"name" => "none selected", "path" => "."];
+    public function toArray(): array
+    {
+        if ($this->parent === null) {
+            $parent = ["id" => 0, "name" => "none selected", "path" => "."];
         } else {
-            $parent=["id" => $this->parent->getId(),"name" => $this->parent->getName(), "path" => "."];
+            $parent = ["id" => $this->parent->getId(), "name" => $this->parent->getName(), "path" => "."];
         }
 
         return [

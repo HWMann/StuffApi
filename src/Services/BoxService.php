@@ -133,7 +133,7 @@ class BoxService
         ;
         $this->entityManager->persist($box);
 
-        $this->mqtt->publish("box/update",[
+        $this->mqtt->publish("/box/update",[
             "id" => $box->getId(),
             "name" => $box->getName(),
             "short" => $box->getShort()

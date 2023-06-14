@@ -67,4 +67,29 @@ class BoxRepository extends ServiceEntityRepository
         return $data;
     }
 
+    /**
+     * @param Box|null $box
+     * @return Box
+     */
+    public function getBreadCrumb(?Box $box):array|null {
+        $boxes=null;
+        if($box!==null) {
+            $boxes=[];
+            while($box!==null) {
+                $boxes[]=[
+                    "id" => $box->getId(),
+                    "label" => $box->getName()
+                ];
+                $box=$box->getParent();
+            }
+            $boxes[]=[
+                "id" => 0,
+                "label" => "root"
+            ];
+            $boxes=array_reverse($boxes);
+        }
+
+        return $boxes;
+    }
+
 }

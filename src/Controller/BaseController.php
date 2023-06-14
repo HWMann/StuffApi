@@ -5,13 +5,14 @@ namespace App\Controller;
 use App\Services\JsonHelper;
 use App\Services\MqttService;
 use Doctrine\ORM\EntityManagerInterface;
-#use JMS\Serializer\SerializerInterface;
 use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Serializer\Context\SerializerContextBuilder;
 
 class BaseController extends AbstractController
 {
@@ -45,11 +46,22 @@ class BaseController extends AbstractController
 
     /**
      * @param mixed $data
+     * @param mixed|null $groups
      * @return string
      */
-    public function serialize(mixed $data): string
+    public function serialize(mixed $data, mixed $groups=null): string
     {
-        return $this->serializer->serialize($data, 'json');
+        $context=SerializationContext::create();
+        $context->setSerializeNull(true);
+
+        if($groups!==null) {
+            if(!is_array($groups)) {
+                $groups=[$groups];
+            }
+            $context->setGroups($groups);
+        }
+
+        return $this->serializer->serialize($data, 'json',$context);
     }
 
     /**
@@ -91,6 +103,18 @@ class BaseController extends AbstractController
             "message" => $message,
             "summary" => $summary,
             "severity" => "success"
+        ]);
+    }
+
+    /**
+     * @param string $message
+     * @param array|null $data
+     * @return JsonResponse
+     */
+    public function quiet(): JsonResponse
+    {
+        return new JsonResponse([
+            "done" => true,
         ]);
     }
 
