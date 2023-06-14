@@ -25,6 +25,7 @@ class Box
 
     #[ORM\ManyToOne(targetEntity: 'Box', inversedBy: 'children')]
     #[ORM\JoinColumn(name: 'parent', referencedColumnName: 'id')]
+    #[Excl]
     private ?Box $parent = null;
 
     #[ORM\Column(type: "boolean")]

@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Services\JsonHelper;
 use App\Services\MqttService;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
+#use JMS\Serializer\SerializerInterface;
 use JMS\Serializer\SerializerInterface;
 use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
@@ -22,7 +22,6 @@ class BaseController extends AbstractController
     public EntityManagerInterface $entityManager;
     private MqttService $mqttService;
     public JsonHelper $helper;
-    public SerializerInterface $serializer;
 
     public function __construct(
         RequestStack           $request,
@@ -50,10 +49,7 @@ class BaseController extends AbstractController
      */
     public function serialize(mixed $data): string
     {
-        $context = new SerializationContext();
-        $context->setSerializeNull(true);
-
-        return $this->serializer->serialize($data, 'json',$context);
+        return $this->serializer->serialize($data, 'json');
     }
 
     /**
@@ -78,9 +74,9 @@ class BaseController extends AbstractController
     }
 
     // for old dingsis
-    public function ok(string $message = "Great success!", ?array $data=null): JsonResponse
+    public function ok(string $message = "Great success!", string $summary = "Great success!"): JsonResponse
     {
-        return $this->success($message, $data);
+        return $this->success($message, $summary);
     }
 
     /**
@@ -88,12 +84,12 @@ class BaseController extends AbstractController
      * @param array|null $data
      * @return JsonResponse
      */
-    public function success(string $message = "Great success!", ?array $data=null): JsonResponse
+    public function success(string $message = "Great success!", string $summary = "Great success!"): JsonResponse
     {
         return new JsonResponse([
             "success" => true,
             "message" => $message,
-            "data" => $data,
+            "summary" => $summary,
             "severity" => "success"
         ]);
     }
@@ -144,7 +140,7 @@ class BaseController extends AbstractController
      * @throws DataTransferException
      * @throws RepositoryException
      */
-    public function mqtt(string $topic, mixed $data = "",bool $fromRoot=false): void
+    public function mqtt(string $topic, mixed $data = "", bool $fromRoot = false): void
     {
         $this->mqttService->publish($topic, $data, $fromRoot);
     }

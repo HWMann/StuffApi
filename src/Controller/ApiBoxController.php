@@ -6,6 +6,8 @@ use App\Entity\Box;
 use App\Repository\BoxRepository;
 use App\Services\BoxService;
 use Doctrine\Common\Collections\Criteria;
+use PhpMqtt\Client\Exceptions\DataTransferException;
+use PhpMqtt\Client\Exceptions\RepositoryException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,21 +24,20 @@ class ApiBoxController extends BaseController
     }
 
     /**
+     * @param BoxService $boxService
      * @param Box|null $box
-     * @return JsonResponse
+     * @return void
+     * @throws DataTransferException
+     * @throws RepositoryException
      */
     #[Route('/list/{box}', name: 'box_list', methods: ["GET"])]
-    public function get(BoxService $boxService, Box $box=null):JsonResponse {
+    public function get(BoxService $boxService, Box $box=null):void {
         $items=$this->helper->list(Box::class,["id","short","name"],
             (new Criteria())
                 ->where(Criteria::expr()->eq("parent",$box))
                 ->andWhere(Criteria::expr()->eq("trashed",false))
         );
-        $this->mqtt("/box/list",[
-            "items" => $items,
-            "breadCrumb" => $boxService->breadCrumb($box)
-        ]);
-        return $this->ok();
+        $this->mqtt("/box/list",["items" => $items, "breadCrumb" => $boxService->breadCrumb($box)]);
     }
 
     /**
@@ -48,6 +49,7 @@ class ApiBoxController extends BaseController
     {
         $boxService->updateOrCreate($box,$this->req);
         $this->entityManager->flush();
+        $this->mqtt("/box/update", $box);
         return $this->ok();
     }
 

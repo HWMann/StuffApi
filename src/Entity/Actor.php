@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
+use JMS\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: ActorRepository::class)]
 class Actor
@@ -26,18 +27,21 @@ class Actor
     private ?string $payload = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[SerializedName("statusTopic")]
     private ?string $statusTopic = null;
 
     #[ORM\Column(nullable: false)]
     private int|null $status = 0;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[SerializedName("jsonPath")]
     private ?string $jsonPath = null;
 
     #[OneToMany(targetEntity: Widget::class, mappedBy: 'statusActor')]
     private Collection $statusWidgets;
 
     #[OneToMany(targetEntity: Port::class, mappedBy: 'actor')]
+    #[SerializedName("statusWidget")]
     private Collection $ports;
 
     public function __construct()
