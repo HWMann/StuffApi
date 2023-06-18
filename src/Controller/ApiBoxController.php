@@ -49,7 +49,7 @@ class ApiBoxController extends BaseController
     {
         $boxService->updateOrCreate($box,$this->req);
         $this->entityManager->flush();
-        $this->mqtt("/box/update", $box);
+        $this->mqtt("/box/update", $this->serialize($box,"list"));
         return $this->ok();
     }
 
@@ -90,15 +90,5 @@ class ApiBoxController extends BaseController
         return $boxService->root();
     }
 
-    /**
-     * @param Box|null $box
-     * @param BoxService $boxService
-     * @return JsonResponse
-     */
-    #[Route('/children/{box}', name: '_children/', methods: ["GET"])]
-    public function childrenAction(BoxService $boxService, ?Box $box=null): JsonResponse
-    {
-        return $boxService->children($box);
-    }
 
 }
